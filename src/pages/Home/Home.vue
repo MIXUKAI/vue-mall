@@ -32,12 +32,15 @@
             </div>
           </li>
         </ul>
+        <home-pagination></home-pagination>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import HomePagination from './components/Pagination'
+
 export default {
   name: 'Home',
   data () {
@@ -79,11 +82,16 @@ export default {
         goodImgUrL: 'http://imooc.51purse.com/static/9.jpg'
       }]
     }
+  },
+  components: {
+    HomePagination
   }
 }
 </script>
 
 <style lang="stylus" scoped>
+.goods-list-wrap >>> .el-pagination
+  margin 20px auto
 .goods-container
   margin 0 auto
   margin-top 100px
@@ -121,6 +129,8 @@ export default {
     .goods-list-wrap
       flex 1
       width 100%
+      display flex
+      flex-wrap wrap
       ul
         li
           float left

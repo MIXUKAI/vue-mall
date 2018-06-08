@@ -26,9 +26,8 @@
                   <input type="checkbox" :id="'check' + index" class="input_check" @click="select($event, index)">
                   <label :for="'check' + index"></label>
                 </span>
-                <!-- <span class="gou" @click="change_gou(index)"><img style="user-select: none;" ref="gou" class="gou_img" src="../../assets/empty_g.png" alt=""></span> -->
                 <div class="cart-item-pic">
-                  <img :src="item.imgUrl" :alt="item.name" style="width: 100%; height: 100%">
+                  <img v-lazy="item.imgUrl" :alt="item.name" style="width: 100%; height: 100%">
                 </div>
                 <div class="cart-item-title">{{ item.name }}</div>
               </div>
@@ -64,7 +63,7 @@
         </div>
       </div>
       <div class="confirm-delete">
-        <h4>确认删除</h4>
+        <h4>确认删除<i class="el-icon-delete" style="margin-left: 10px;"></i></h4>
         <div class="button-wrapper">
           <span @click="deleteItem" class="confirm-button ok">确定</span>
           <span @click="hideConfirm" class="confirm-button">取消</span>
