@@ -20,7 +20,7 @@
         <ul>
           <li v-for="item in goodsList" :key="item.id">
             <div class="good-card">
-              <img :src="item.goodImgUrL" alt="good-img">
+              <img v-lazy="item.goodImgUrL" alt="good-img">
               <div class="good-main">
                 <h3 class="good-name">{{ item.goodName }}</h3>
                 <p class="good-price">{{ item.goodPrice }}</p>

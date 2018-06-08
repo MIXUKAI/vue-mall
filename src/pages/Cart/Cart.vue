@@ -95,8 +95,6 @@ export default {
       selectList: [],
       totalPrice: 0,
       deleteIndex: 0,
-      empty_gou: '/empty_g.png',
-      gou: './images/empty_g.png',
       selectAllFlag: false
     }
   },

@@ -21,6 +21,7 @@ export default {
 @import "../style/styls/variables"
 // 为什么不能以 "@/style/styls/variables"的方式引入
 .header
+  z-index 10
   position fixed
   left 0
   top 0
