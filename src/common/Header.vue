@@ -2,10 +2,13 @@
   <div class="header">
     <div class="header-logo"></div>
     <div class="header-tools">
+      <el-button plain size="middle" @click="handleLogin">登录</el-button>
+      <!--TODO: 使用VUEX实现兄弟组件之的通信 -->
       <div class="user-wrapper">
         <img class="user-icon" src="../assets/user-icon.png" alt="this is user-icon">
         <span class="user-name">mixukai</span>
-        <a class="user-logout" href="javascript:;">注销</a>
+        <router-link  to="cart" class="cart-img"><img src="../assets/cart.png" alt=""></router-link>
+        <el-button plain size="middle">注销</el-button>
       </div>
     </div>
   </div>
@@ -13,11 +16,19 @@
 
 <script>
 export default {
-  name: 'Header'
+  name: 'Header',
+  methods: {
+    handleLogin () {
+      this.$emit('alertLogin')
+    }
+  }
 }
 </script>
 
 <style lang="stylus" scoped>
+.header-tools >>> .el-button
+  float left
+  margin 20px 25px
 @import "../style/styls/variables"
 // 为什么不能以 "@/style/styls/variables"的方式引入
 .header
@@ -32,19 +43,28 @@ export default {
     float right
     margin-right 30px
     .user-wrapper
+      float left
       height $header_height
       line-height $header_height
       .user-icon
+        float left
+        margin-top 10px
         width 60px
         height 60px
         border-radius 50%
         vertical-align middle
       .user-name
+        float left
         margin-left $user_ml
         color #fff
-      .user-logout
-        margin-left $user_ml
-        padding 5px 15px
-        color #000
-        background-color #fff
+      .cart-img
+        float left
+        margin-left 15px
+        width 50px
+        height 50px
+        line-height $header_height
+        img
+          vertical-align middle
+          height 100%
+          cursor pointer
 </style>

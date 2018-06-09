@@ -5,17 +5,20 @@ import App from './App'
 import router from './router'
 import axios from 'axios'
 import VueLazyLoad from 'vue-lazyload'
-import { Button, Pagination } from 'element-ui'
+import { Button, Pagination, Form, Input, FormItem } from 'element-ui'
 import './style/reset.css'
 
 Vue.config.productionTip = false
 Vue.use(axios)
+Vue.use(Form)
+Vue.use(FormItem)
 Vue.use(Button)
 Vue.use(Pagination)
+Vue.use(Input)
 Vue.use(VueLazyLoad, {
   preload: 1.3,
   error: require('./assets/error.png'),
-  loading: require('./assets/loading.gif'),
+  loading: require('./assets/loading-data.gif'),
   attempt: 20
 })
 

@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <home-header></home-header>
-    <router-view @showCover="showCover" @hideCover="hideCover"/>
-    <div class="cover">
+    <home-header @alertLogin="show = true"></home-header>
+    <router-view @showCover="showCover" @hideCover="hideCover" :login="show"/>
+    <div class="cover" :class="{ display: show }">
     </div>
   </div>
 </template>
@@ -15,14 +15,19 @@ export default {
   components: {
     HomeHeader
   },
+  data () {
+    return {
+      show: false
+    }
+  },
   methods: {
     showCover () {
-      var cover = document.querySelector('.cover')
-      cover.style.display = 'block'
+      this.show = true
+      console.log(this.$route)
+      console.log(this.$router)
     },
     hideCover () {
-      var cover = document.querySelector('.cover')
-      cover.style.display = 'none'
+      this.show = false
     }
   }
 }
@@ -43,4 +48,6 @@ body {
   bottom 0
   left 0
   background-color rgba(0,0,0,.6)
+.display
+  display block
 </style>

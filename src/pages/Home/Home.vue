@@ -16,33 +16,47 @@
           <dd><a href="javascript:;">MORE</a></dd>
         </dl>
       </div>
-      <div class="goods-list-wrap">
-        <ul>
-          <li v-for="item in goodsList" :key="item.id">
-            <div class="good-card">
-              <img v-lazy="item.goodImgUrL" alt="good-img">
-              <div class="good-main">
-                <h3 class="good-name">{{ item.goodName }}</h3>
-                <p class="good-price">{{ item.goodPrice }}</p>
-                <!-- 到时候可以过滤下 -->
-                <div class="btn-area">
-                  <a class="add-cart" href="javascript:;">加入购物车</a>
+      <div class="goods-main">
+        <div class="loading-data" v-if="loading">
+          <img src="../../assets/loading.gif" alt="">
+        </div>
+        <div class="goods-list-wrap">
+          <ul>
+            <li v-for="item in goodsList" :key="item.id">
+              <div class="good-card">
+                <img v-lazy="item.goodImgUrL" alt="good-img">
+                <div class="good-main">
+                  <h3 class="good-name">{{ item.goodName }}</h3>
+                  <p class="good-price">{{ item.goodPrice }}</p>
+                  <!-- 到时候可以过滤下 -->
+                  <div class="btn-area">
+                    <a class="add-cart" href="javascript:;">加入购物车</a>
+                  </div>
                 </div>
               </div>
-            </div>
-          </li>
-        </ul>
-        <home-pagination></home-pagination>
+            </li>
+          </ul>
+          <home-pagination></home-pagination>
+        </div>
       </div>
     </div>
+    <transition name="fade">
+      <home-login v-show="lg_show" @hideLogin="closeLogin"></home-login>
+    </transition>
   </div>
 </template>
 
 <script>
 import HomePagination from './components/Pagination'
+import HomeLogin from './components/Login'
 
 export default {
   name: 'Home',
+  components: {
+    HomePagination,
+    HomeLogin
+  },
+  props: ['login'],
   data () {
     return {
       goodsList: [{
@@ -80,16 +94,32 @@ export default {
         goodName: 'IH 电饭煲',
         goodPrice: '999',
         goodImgUrL: 'http://imooc.51purse.com/static/9.jpg'
-      }]
+      }],
+      loading: false
+      // lg_show: false
     }
   },
-  components: {
-    HomePagination
+  computed: {
+    lg_show () {
+      return this.login
+    }
+  },
+  methods: {
+    closeLogin () {
+      this.lg_show = false
+      this.$emit('hideCover')
+    }
   }
 }
 </script>
 
 <style lang="stylus" scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: all .4s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
 .goods-list-wrap >>> .el-pagination
   margin 20px auto
 .goods-container
@@ -126,8 +156,13 @@ export default {
         letter-spacing 1px
         a
           color #666
-    .goods-list-wrap
+    .goods-main
       flex 1
+      width 100%
+    .loading-data
+      text-align center
+      margin 30px 0
+    .goods-list-wrap
       width 100%
       display flex
       flex-wrap wrap
