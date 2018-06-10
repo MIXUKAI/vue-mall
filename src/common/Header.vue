@@ -1,14 +1,18 @@
 <template>
   <div class="header">
-    <div class="header-logo"></div>
+    <div class="header-logo">
+      <router-link to="/">
+        <img src="../assets/mf.png" alt="">
+      </router-link>
+    </div>
     <div class="header-tools">
-      <el-button plain size="middle" @click="handleLogin">登录</el-button>
+      <el-button plain size="middle" @click="handleLogin" v-if="!showUserWrap">登录</el-button>
       <!--TODO: 使用VUEX实现兄弟组件之的通信 -->
-      <div class="user-wrapper">
+      <div class="user-wrapper" v-if="showUserWrap">
         <img class="user-icon" src="../assets/user-icon.png" alt="this is user-icon">
-        <span class="user-name">mixukai</span>
+        <span class="user-name">{{ username }}</span>
         <router-link  to="cart" class="cart-img"><img src="../assets/cart.png" alt=""></router-link>
-        <el-button plain size="middle">注销</el-button>
+        <el-button plain size="middle" @click="logout">注销</el-button>
       </div>
     </div>
   </div>
@@ -17,9 +21,20 @@
 <script>
 export default {
   name: 'Header',
+  props: {
+    username: String
+  },
   methods: {
     handleLogin () {
       this.$emit('alertLogin')
+    },
+    logout () {
+      this.$emit('logout')
+    }
+  },
+  computed: {
+    showUserWrap () {
+      return !!this.username
     }
   }
 }
@@ -39,6 +54,13 @@ export default {
   width 100%
   height $header_height
   background-color $header_bgcolor
+  .header-logo
+    height $header_height
+    float left
+    margin-left 50px
+    img
+      height 100%
+      cursor pointer
   .header-tools
     float right
     margin-right 30px

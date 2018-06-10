@@ -4,9 +4,9 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page.sync="currentPage3"
-      :page-size="10"
+      :page-size="12"
       layout="prev, pager, next, jumper"
-      :total="100">
+      :total="5900">
     </el-pagination>
   </div>
 </template>
@@ -14,11 +14,11 @@
 export default {
   name: 'Pagination',
   methods: {
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
-    },
+    // handleSizeChange (val) {
+    //   console.log(`每页 ${val} 条`)
+    // },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      this.$emit('getPage', val)
     }
   },
   data () {

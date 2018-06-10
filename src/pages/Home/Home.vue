@@ -1,34 +1,46 @@
 <template>
   <div class="goods-container">
     <div class="filter-nav">
-      <span class="sortby">Sort by:</span>
-      <a href="javascript:;">Default</a>
-      <a href="javascript:;">Price<span class="iconfont"></span></a>
+      <el-input
+        placeholder="请输入关键词"
+        v-model="gjcInput"
+        size="middle"
+        clearable
+        @input="inputchange"
+      >
+      </el-input>
+      <span>关键词搜索</span>
     </div>
     <div class="goods-result">
       <div class="goods-filter" id="filter">
         <dl class="filter-price">
           <dt>Price:</dt>
-          <dd><a href="javascript:;">ALL</a></dd>
-          <dd><a href="javascript:;">0-50</a></dd>
-          <dd><a href="javascript:;">50-100</a></dd>
-          <dd><a href="javascript:;">100-200</a></dd>
-          <dd><a href="javascript:;">MORE</a></dd>
+          <dd>
+            <el-input  placeholder="最小值" v-model="startPrice"></el-input>
+            <el-input  placeholder="最大值" v-model="endPrice"></el-input>
+          </dd>
+          <dd style="background-color: #fff; padding:0;">
+            <el-button type="primary" @click="handlePriceRange">查询</el-button>
+          </dd>
+          <dd><el-button type="primary" @click="hanldeAllBooks">查看全部</el-button></dd>
         </dl>
       </div>
       <div class="goods-main">
         <div class="loading-data" v-if="loading">
           <img src="../../assets/loading.gif" alt="">
         </div>
+        <div class="not-found" v-if="!goodsList.length && !loading">
+          <img src="../../assets/notfound.png" alt="">
+          <p>搜索不到结果</p>
+        </div>
         <div class="goods-list-wrap">
           <ul>
             <li v-for="item in goodsList" :key="item.id">
               <div class="good-card">
-                <img v-lazy="item.goodImgUrL" alt="good-img">
+                <img v-lazy="item.imgurl" alt="good-img">
                 <div class="good-main">
-                  <h3 class="good-name">{{ item.goodName }}</h3>
-                  <p class="good-price">{{ item.goodPrice }}</p>
-                  <!-- 到时候可以过滤下 -->
+                  <h3 class="good-name"><a href="">{{ item.name }}</a></h3>
+                  <p class="good-price">{{ item.price  | formatPrice }}</p>
                   <div class="btn-area">
                     <a class="add-cart" href="javascript:;">加入购物车</a>
                   </div>
@@ -36,12 +48,12 @@
               </div>
             </li>
           </ul>
-          <home-pagination></home-pagination>
+          <home-pagination @getPage="getPage"></home-pagination>
         </div>
       </div>
     </div>
     <transition name="fade">
-      <home-login v-show="lg_show" @hideLogin="closeLogin"></home-login>
+      <home-login v-show="lg_show" @hideLogin="closeLogin" @loginsucc="loginsucc"></home-login>
     </transition>
   </div>
 </template>
@@ -59,44 +71,11 @@ export default {
   props: ['login'],
   data () {
     return {
-      goodsList: [{
-        id: '001',
-        goodName: '自拍杆',
-        goodPrice: '39',
-        goodImgUrL: 'http://imooc.51purse.com/static/zipai.jpg'
-      }, {
-        id: '002',
-        goodName: '智能插线板',
-        goodPrice: '59',
-        goodImgUrL: 'http://imooc.51purse.com/static/6.jpg'
-      }, {
-        id: '003',
-        goodName: '头戴式耳机',
-        goodPrice: '80',
-        goodImgUrL: 'http://imooc.51purse.com/static/2.jpg'
-      }, {
-        id: '004',
-        goodName: '小钢炮蓝牙音箱',
-        goodPrice: '129',
-        goodImgUrL: 'http://imooc.51purse.com/static/1.jpg'
-      }, {
-        id: '005',
-        goodName: '智能摄像机',
-        goodPrice: '389',
-        goodImgUrL: 'http://imooc.51purse.com/static/photo.jpg'
-      }, {
-        id: '006',
-        goodName: 'Ear700',
-        goodPrice: '700',
-        goodImgUrL: 'http://imooc.51purse.com/static/16.jpg'
-      }, {
-        id: '007',
-        goodName: 'IH 电饭煲',
-        goodPrice: '999',
-        goodImgUrL: 'http://imooc.51purse.com/static/9.jpg'
-      }],
-      loading: false
-      // lg_show: false
+      goodsList: [],
+      loading: false,
+      timeoutID: null,
+      startPrice: '',
+      endPrice: ''
     }
   },
   computed: {
@@ -105,10 +84,80 @@ export default {
     }
   },
   methods: {
+    inputchange (value) {
+      clearTimeout(this.timeoutID)
+      this.timeoutID = setTimeout(() => {
+        this.loading = true
+        var completeUrl
+        if (value === '') {
+          completeUrl = this.base_url + '/Oracle/getItems/0'
+        } else {
+          completeUrl = this.base_url + '/Oracle/search?keyword=' + value
+        }
+        this.$axios.get(completeUrl)
+          .then(res => {
+            if (res.data.length) {
+              this.goodsList = res.data
+            } else {
+              this.goodsList = []
+            }
+            this.loading = false
+          })
+      }, 1000)
+    },
     closeLogin () {
       this.lg_show = false
       this.$emit('hideCover')
+    },
+    getPage (page) {
+      this.loading = true
+      let pageUrl = 'http://10.62.16.223:8080/Oracle/getItems/' + (page - 1)
+      this.$axios.get(pageUrl)
+        .then(res => {
+          this.goodsList = res.data
+          this.loading = false
+        })
+    },
+    fetchData () {
+      this.loading = true
+      this.$axios.get('http://10.62.16.223:8080/Oracle/getItems/0')
+        .then(res => {
+          this.loading = false
+          this.goodsList = res.data
+        })
+    },
+    loginsucc (username) {
+      this.$emit('loginsucc', username)
+    },
+    handlePriceRange () {
+      var completeUrl = `${this.base_url}/Oracle/getItemByPrice?begin=${this.startPrice}&end=${this.endPrice}&page=0`
+      this.loading = true
+      this.$axios.get(completeUrl)
+        .then(res => {
+          if (res.data) {
+            this.goodsList = res.data.length ? res.data : []
+          } else {
+            this.goodsList = []
+          }
+          this.loading = false
+        })
+    },
+    hanldeAllBooks () {
+      this.fetchData()
     }
+  },
+  filters: {
+    formatPrice (price) {
+      return '￥' + price.toFixed(2)
+    }
+  },
+  created () {
+    this.fetchData()
+  },
+  mounted () {
+    this.$nextTick(() => {
+      console.log(this.goodsList)
+    })
   }
 }
 </script>
@@ -117,34 +166,45 @@ export default {
 .fade-enter-active, .fade-leave-active {
   transition: all .4s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+.fade-enter, .fade-leave-to {
   opacity: 0;
 }
 .goods-list-wrap >>> .el-pagination
   margin 20px auto
+.filter-nav  >>> .el-input.el-input--middle.el-input--suffix
+  width 300px
+.filter-price >>> .el-input
+  float left
+  width 46%
+.filter-price >>> .el-input:nth-child(1)
+  margin-right 10px
+.filter-price >>> .el-button
+  width 100%
 .goods-container
   margin 0 auto
-  margin-top 100px
+  margin-top 150px
   max-width 1260px
   .filter-nav
     box-sizing border-box
-    padding 0 30px
     width 100%
     height 55px
     line-height 55px
     background-color #fff
     text-align right
+    span
+      font-weight bold
     a
       margin-left 20px
       color #000
   .goods-result
-    margin-top 20px
+    margin-top 28px
     display flex
     width 100%
     .goods-filter
       box-sizing border-box
-      width 255px
+      width 200px
       height 300px
+      margin-right 50px
       dt
         margin 20px
         margin-bottom 40px
@@ -152,16 +212,21 @@ export default {
         letter-spacing 2px
       dd
         margin 20px
-        font-size 16px
-        letter-spacing 1px
+        overflow hidden
         a
-          color #666
+          color #fff
     .goods-main
       flex 1
       width 100%
     .loading-data
       text-align center
       margin 30px 0
+    .not-found
+      padding 50px
+      text-align center
+      p
+        margin 30px
+        font-size 30px
     .goods-list-wrap
       width 100%
       display flex
@@ -195,6 +260,12 @@ export default {
               margin-bottom 30px
               font-size 16px
               color #444
+              height 54px
+              overflow hidden
+              text-overflow ellipsis
+              line-height 18px
+              a:hover
+                text-decoration underline
             .good-price
               color #d1434a
             .btn-area
