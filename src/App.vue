@@ -60,6 +60,7 @@ body {
 .cover
   display none
   position fixed
+  z-index 9
   top 0
   right 0
   bottom 0

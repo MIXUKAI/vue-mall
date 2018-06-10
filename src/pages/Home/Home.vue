@@ -35,14 +35,14 @@
         </div>
         <div class="goods-list-wrap">
           <ul>
-            <li v-for="item in goodsList" :key="item.id">
+            <li v-for="(item, index) in goodsList" :key="item.id">
               <div class="good-card">
                 <img v-lazy="item.imgurl" alt="good-img">
                 <div class="good-main">
                   <h3 class="good-name"><a href="">{{ item.name }}</a></h3>
                   <p class="good-price">{{ item.price  | formatPrice }}</p>
                   <div class="btn-area">
-                    <a class="add-cart" href="javascript:;">加入购物车</a>
+                    <a class="add-cart" @click="addCart(index)" style="cursor: pointer;">加入购物车</a>
                   </div>
                 </div>
               </div>
@@ -130,6 +130,10 @@ export default {
       this.$emit('loginsucc', username)
     },
     handlePriceRange () {
+      if (!this.startPrice || !this.endPrice) {
+        this.hanldeAllBooks()
+        return
+      }
       var completeUrl = `${this.base_url}/Oracle/getItemByPrice?begin=${this.startPrice}&end=${this.endPrice}&page=0`
       this.loading = true
       this.$axios.get(completeUrl)
@@ -144,6 +148,24 @@ export default {
     },
     hanldeAllBooks () {
       this.fetchData()
+    },
+    addCart (index) {
+      const itemId = this.goodsList[index].id
+      const username = sessionStorage.username
+      this.$axios({
+        url: `${this.base_url}/Oracle/addShoppingCar`,
+        method: 'POST',
+        headers: {'content-type': 'application/json'},
+        data: JSON.stringify({username, itemId})
+      }).then(res => {
+        if (res.data === 'ok') {
+          this.$message({
+            showClose: true,
+            message: '添加购物成功',
+            type: 'success'
+          })
+        }
+      })
     }
   },
   filters: {

@@ -176,7 +176,6 @@ export default {
             // TODO: switch case
           })
         } else {
-          alert('error submit!!')
           return false
         }
       })

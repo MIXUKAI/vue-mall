@@ -9,7 +9,9 @@
       <el-button plain size="middle" @click="handleLogin" v-if="!showUserWrap">登录</el-button>
       <!--TODO: 使用VUEX实现兄弟组件之的通信 -->
       <div class="user-wrapper" v-if="showUserWrap">
-        <img class="user-icon" src="../assets/user-icon.png" alt="this is user-icon">
+        <router-link to="/me">
+          <img class="user-icon" src="../assets/user-icon1.png" alt="this is user-icon">
+        </router-link>
         <span class="user-name">{{ username }}</span>
         <router-link  to="cart" class="cart-img"><img src="../assets/cart.png" alt=""></router-link>
         <el-button plain size="middle" @click="logout">注销</el-button>

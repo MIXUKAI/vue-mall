@@ -1,7 +1,7 @@
 <template>
   <div class="cart-container">
         <div class="cart">
-      <h2 class="cart-title">我的购物车</h2>
+      <h2 class="cart-title">我的订单</h2>
       <!-- <div class="empty-cart">
         <img src="./images/empty_gwc.png" alt="">
         <p>
@@ -25,25 +25,21 @@
           <ul class="cart-item-list">
             <li v-for="(item, index) in itemList" :key="item.id">
               <div class="cart-tab-1">
-                <span class="check-box-wrap">
-                  <input type="checkbox" :id="'check' + index" class="input_check" @click="select($event, index)">
-                  <label :for="'check' + index"></label>
-                </span>
                 <div class="cart-item-pic">
-                  <img v-lazy="item.imgurl" :alt="item.name" style="width: 100%; height: 100%">
+                  <img v-lazy="item.item.imgurl" :alt="item.name" style="width: 100%; height: 100%">
                 </div>
-                <div class="cart-item-title">{{ item.name }}</div>
+                <div class="cart-item-title">{{ item.item.name }}</div>
               </div>
               <div class="cart-tab-2">
-                <div class="item-price" style="color: #777;">￥<span class="price-num">{{ item.price | fixed}}</span></div>
+                <div class="item-price" style="color: #777;">￥<span class="price-num">{{ item.item.price | fixed}}</span></div>
               </div>
               <div class="cart-tab-3">
                 <div class="item-quantity" style="color: #777;">
-                  <el-input-number size="mini" v-model="item.quantity" @change="changeQuantity" :min="1"></el-input-number>
+                  {{item.num}}
                 </div>
               </div>
               <div class="cart-tab-4">
-                <div class="item-price-total" style="color: #777;"><span class="price-tolal-num">{{ item.quantity * item.price | fixed }}元</span></div>
+                <div class="item-price-total" style="color: #777;"><span class="price-tolal-num">{{ item.num * item.item.price | fixed }}元</span></div>
               </div>
               <div class="cart-tab-5">
                 <div class="cart-item-opration">
@@ -52,19 +48,6 @@
               </div>
             </li>
           </ul>
-        </div>
-      </div>
-      <div class="cart-foot-wrap">
-        <span class="check-box-wrap check-all">
-          <input type="checkbox" id="checkall" class="input_check" :checked="selectAllFlag" @click="selectAll" v-model="selectAllFlag">
-          <label for="checkall"></label>
-        </span>
-        选择全部
-        <div class="cart-foot-r">
-          <div class="btn-wrap">
-            <a class="btn" @click="settleItems">结算</a>
-          </div>
-          <div class="item-total">总价：<span style="color: #E35C62">￥</span><span class="item-total-num">{{ totalPrice | fixed }}</span></div>
         </div>
       </div>
       <div class="confirm-delete">
@@ -80,15 +63,12 @@
 
 <script>
 export default {
-  name: 'Cart',
+  name: 'Me',
   data () {
     return {
       loading: false,
       itemList: [],
-      selectList: [],
-      totalPrice: 0,
-      deleteIndex: 0,
-      selectAllFlag: false
+      deleteIndex: 0
     }
   },
   created () {
@@ -97,33 +77,15 @@ export default {
   methods: {
     fetchData () {
       this.loading = true
-      var url = `${this.base_url}/Oracle/showShoppingCar?username=${sessionStorage.username}`
+      var url = `${this.base_url}/Oracle/getOrderList?username=${sessionStorage.username}`
       this.$axios.get(url)
         .then(res => {
+          console.log(res)
           if (res.data) {
             this.itemList = res.data
-            this.itemList.forEach((item, index) => {
-              this.$set(item, 'quantity', 1)
-            })
           }
           this.loading = false
         })
-    },
-    calcTotal () {
-      this.totalPrice = 0
-      this.selectList.forEach((val, index) => {
-        this.totalPrice += val.price * val.quantity
-      })
-    },
-    changeSelectList () {
-      this.selectList = []
-      var checkBoxs = document.getElementsByClassName('input_check')
-      this.itemList.forEach((val, index) => {
-        if (checkBoxs[index].checked) {
-          this.selectList.push(val)
-        }
-      })
-      this.selectAllFlag = this.selectList.length === this.itemList.length
     },
     showConfirm (index) {
       var confirmBox = document.getElementsByClassName('confirm-delete')[0]
@@ -137,12 +99,12 @@ export default {
       this.$emit('hideCover')
     },
     deleteItem () {
-      const itemId = this.itemList[this.deleteIndex].id
+      const itemId = this.itemList[this.deleteIndex].item.id
       const username = sessionStorage.username
       this.itemList.splice(this.deleteIndex, 1)
       this.hideConfirm()
       this.$axios({
-        url: `${this.base_url}/Oracle/deleteShoppingCar`,
+        url: `${this.base_url}/Oracle/deleteOrderListItem`,
         method: 'POST',
         headers: {'content-type': 'application/json'},
         data: JSON.stringify({username, itemId})
@@ -151,65 +113,11 @@ export default {
         if (res.data === 'ok') {
           this.$message({
             showClose: true,
-            message: '删除商品成功',
+            message: '删除订单成功',
             type: 'success'
           })
         }
       })
-      this.$nextTick(function () {
-        this.changeSelectList()
-        this.selectAllFlag = this.confirmList.length === this.itemList.length
-      })
-    },
-    select (event, index) {
-      this.changeSelectList()
-    },
-    selectAll () {
-      var checkBoxs = Array.from(document.getElementsByClassName('input_check'))
-      var checkAll = document.getElementById('checkall')
-      if (!checkAll.checked) {
-        checkBoxs.forEach((input, index) => {
-          input.checked = false
-        })
-        this.selectList = []
-      } else {
-        checkBoxs.forEach((input, index) => {
-          input.checked = true
-        })
-        this.selectList = [...this.itemList]
-      }
-    },
-    changeQuantity () {
-      this.calcTotal()
-    },
-    settleItems () {
-      var username = sessionStorage.username
-      var itemList = this.selectList.map(val => {
-        return {
-          itemid: val.id,
-          num: val.quantity
-        }
-      })
-      this.$axios({
-        url: `${this.base_url}/Oracle/addOrderList`,
-        method: 'POST',
-        headers: {'content-type': 'application/json'},
-        data: JSON.stringify({username, itemList})
-      }).then(res => {
-        if (res.data === 'ok') {
-          this.$message({
-            showClose: true,
-            message: '结算成功',
-            type: 'success'
-          })
-          this.fetchData()
-        }
-      })
-    }
-  },
-  watch: {
-    selectList () {
-      this.calcTotal()
     }
   },
   filters: {
@@ -315,79 +223,6 @@ export default {
           cursor pointer
           position relative
           top -5px
-.cart-foot-wrap
-  margin-top 50px
-  height 55px
-  background-color #fff
-  border 1px solid #e9e9e9
-  color #666
-  line-height 55px
-  .gou
-    float left
-    margin-top 10px
-    margin-left 30px
-    width 35px
-    height 35px
-    margin-right 30px
-    img
-      width 100%
-      cursor pointer
-  .cart-foot-r
-    float right
-    height 100%
-    .item-total
-      float right
-      margin-right 30px
-      color #c9c9c9
-      .item-total-num
-        color #E35C62
-        font-weight 700
-    .btn-wrap
-      float right
-      height 100%
-      .btn
-        display block
-        padding 0 30px
-        height 100%
-        background-color #E35C62
-        font-size 25px
-        color #fff
-        line-height 55px
-        cursor pointer
-        &:hover
-          background-color #f35C62
-.check-box-wrap
-  float left
-  margin-top 25px
-  margin-left 30px
-  height 30px
-  position relative
-  .input_check
-    position absolute
-    visibility hidden
-    &+label
-      vertical-align top
-      display inline-block
-      width 25px
-      height 25px
-      border 2px solid #e92333
-      cursor pointer
-      border-radius 50%
-    &:checked+label
-      background-color #e92333
-    &:checked+label::after
-      content: "";
-      position: absolute;
-      left: 3px;
-      bottom: 14px;
-      width: 17px;
-      height:7px;
-      border: 3px solid #fff;
-      border-top-color: transparent;
-      border-right-color: transparent;
-      transform: rotate(-45deg)
-.check-all
-  margin 15px 30px 0
 .confirm-delete
   opacity 0
   visibility hidden
