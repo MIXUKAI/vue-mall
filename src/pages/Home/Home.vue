@@ -111,7 +111,7 @@ export default {
     },
     getPage (page) {
       this.loading = true
-      let pageUrl = 'http://10.62.16.223:8080/Oracle/getItems/' + (page - 1)
+      let pageUrl = `${this.base_url}/Oracle/getItems/${page - 1}`
       this.$axios.get(pageUrl)
         .then(res => {
           this.goodsList = res.data
@@ -120,7 +120,7 @@ export default {
     },
     fetchData () {
       this.loading = true
-      this.$axios.get('http://10.62.16.223:8080/Oracle/getItems/0')
+      this.$axios.get(`${this.base_url}/Oracle/getItems/0`)
         .then(res => {
           this.loading = false
           this.goodsList = res.data
@@ -254,6 +254,7 @@ export default {
       display flex
       flex-wrap wrap
       ul
+        width 100%
         li
           float left
           box-sizing border-box

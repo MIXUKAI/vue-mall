@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <home-header @alertLogin="show = true" :username="username" @logout="logout"></home-header>
-    <router-view @showCover="showCover" @hideCover="hideCover" :login="show" @loginsucc="loginsucc"/>
+    <router-view @showCover="show = true" @hideCover="show = false" :login="show" @loginsucc="loginsucc"/>
     <div class="cover" :class="{ display: show }">
     </div>
   </div>
@@ -22,14 +22,6 @@ export default {
     }
   },
   methods: {
-    showCover () {
-      this.show = true
-      console.log(this.$route)
-      console.log(this.$router)
-    },
-    hideCover () {
-      this.show = false
-    },
     loginsucc (username) {
       sessionStorage.username = username
       this.username = sessionStorage.username
