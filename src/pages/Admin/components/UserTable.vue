@@ -46,7 +46,28 @@
         <el-button @click="deleteMultipleSelection" size="large" type="danger">批量删除</el-button>
       </div>
     </template>
-    <user-info-edit-box @updateUser="fetchUserData" :edituser="editUser" :editpwd="editPwd" :editUserId="editUserId"></user-info-edit-box>
+    <!-- 使用element的dialog组件替代自己写的编辑框 -->
+    <el-dialog
+      title="编辑用户"
+      :visible.sync="dialogVisible"
+      width="450px"
+      :before-close="handleClose">
+      <p>
+        <el-input v-model="editUser" placeholder="请输入内容">
+          <template slot="prepend">新的用户账号</template>
+        </el-input>
+      </p>
+      <p>
+        <el-input v-model="editPwd" placeholder="请输入内容">
+          <template slot="prepend">新的用户密码</template>
+        </el-input>
+      </p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">关 闭</el-button>
+        <el-button type="primary" @click="hanldeDialogClick">提 交</el-button>
+      </span>
+    </el-dialog>
+    <!-- <user-info-edit-box @closeEdit="showEdit = false" v-if="showEdit" @updateUser="fetchUserData" :edituser="editUser" :editpwd="editPwd" :editUserId="editUserId"></user-info-edit-box> -->
   </div>
 </template>
 
@@ -64,7 +85,9 @@ export default {
       multipleSelection: [],
       editUser: '',
       editPwd: '',
-      editUserId: 0
+      editUserId: 0,
+      // showEdit: false,
+      dialogVisible: false
     }
   },
   methods: {
@@ -80,6 +103,7 @@ export default {
       this.editUser = row.username
       this.editPwd = row.password
       this.editUserId = row.id
+      this.dialogVisible = true
     },
     handleDelete (row, rowindex) {
       console.log(row, rowindex)
@@ -135,6 +159,28 @@ export default {
         // pass
       })
       console.log(this.multipleSelection)
+    },
+    hanldeDialogClick () {
+      var id = this.editUserId
+      var username = this.editUser
+      var password = this.editPwd
+
+      this.$axios({
+        url: `${this.base_url}/Oracle/changeUserInfo`,
+        method: 'POST',
+        headers: {'content-type': 'application/json'},
+        data: JSON.stringify({ id, username, password })
+      }).then(res => {
+        if (res.data === 'ok') {
+          this.fetchUserData()
+          this.$message({
+            showClose: true,
+            message: '用户信息修改成功',
+            type: 'success'
+          })
+          this.dialogVisible = false
+        }
+      })    
     }
   },
   created () {
@@ -144,6 +190,12 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.table-container >>> .el-table th
+.table-container >>> .el-dialog__body
+  padding 10px 50px
+.el-input
+  margin-top 20px
+.el-table th
   background-color #eee
+// .table-container >>> .el-table th
+//   background-color #eee
 </style>

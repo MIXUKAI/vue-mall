@@ -1,13 +1,19 @@
 <template>
   <div class="upload-content">
       <p>
-        <el-input v-model="bookName" placeholder="请输入书名"></el-input>
+        <el-input v-model="bookName" placeholder="请输入书名">
+          <template slot="prepend">书 名</template>
+        </el-input>
       </p>
       <p>
-        <el-input v-model="bookPrice" placeholder="请输入书本价格"></el-input>
+        <el-input v-model="bookPrice" placeholder="请输入书本价格">
+          <template slot="prepend">书本价格</template>
+        </el-input>
       </p>
       <p>
-        <el-input v-model="bookURL" placeholder="图片地址"></el-input>
+        <el-input v-model="bookURL" placeholder="请输入图片链接地址">
+          <template slot="prepend">图片地址</template>
+        </el-input>
       </p>
       <el-button type="primary" @click="uploadBook">上传<i class="el-icon-upload el-icon--right"></i></el-button>
   </div>
@@ -19,16 +25,15 @@ export default {
   data () {
     return {
       bookName: '',
-      bookPrice: 0,
+      bookPrice: '',
       bookURL: ''
     }
   },
   methods: {
     uploadBook () {
-      console.log(this.bookName, Number.parseFloat(this.bookPrice), this.bookURL)
-      var name = this.bookName,
-          price = this.bookPrice,
-          imgurl = this.bookURL
+      var name = this.bookName
+      var price = +this.bookPrice
+      var imgurl = this.bookURL
       this.$axios({
         url: `${this.base_url}/Oracle/addItem`,
         method: 'POST',
@@ -37,6 +42,9 @@ export default {
       }).then(res => {
         console.log(res)
         if (res.data === 'ok') {
+          this.bookName = ''
+          this.bookPrice = ''
+          this.bookURL = ''
           this.$message({
             showClose: true,
             message: '书本上传成功',

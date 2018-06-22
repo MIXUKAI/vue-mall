@@ -20,7 +20,8 @@ import
   Table,
   TableColumn,
   Loading,
-  MessageBox
+  MessageBox,
+  Dialog
 }
   from 'element-ui'
 import './style/reset.css'
@@ -40,6 +41,7 @@ Vue.use(MenuItemGroup)
 Vue.use(Table)
 Vue.use(TableColumn)
 Vue.use(Loading)
+Vue.use(Dialog)
 Vue.use(VueLazyLoad, {
   preload: 1.3,
   // error: require('./assets/error.png'),
@@ -47,7 +49,7 @@ Vue.use(VueLazyLoad, {
   attempt: 20
 })
 Vue.prototype.$message = Message
-Vue.prototype.base_url = 'http://10.62.19.143:8080'
+Vue.prototype.base_url = 'http://10.62.20.186:8080'
 Vue.prototype.$axios = axios
 Vue.prototype.$confirm = MessageBox.confirm
 
