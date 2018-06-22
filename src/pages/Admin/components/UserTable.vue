@@ -180,7 +180,7 @@ export default {
           })
           this.dialogVisible = false
         }
-      })    
+      })
     }
   },
   created () {
