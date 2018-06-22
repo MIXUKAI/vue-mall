@@ -7,6 +7,7 @@
     <span>新的用户密码:</span><el-input v-model="editpwd" placeholder="请输入内容"></el-input>
   </p>
   <el-button type="primary" @click="handleClick">修改</el-button>
+  <el-button @click="handleClose">关闭</el-button>
 </div>
 </template>
 
@@ -19,11 +20,13 @@ export default {
     editUserId: Number
   },
   methods: {
+    handleClose () {
+      this.$emit('closeEdit')
+    },
     handleClick () {
-      console.log(this.edituser, this.editpwd, this.editUserId)
-      var id = this.editUserId,
-          username = this.edituser,
-          password = this.editpwd
+      var id = this.editUserId
+      var username = this.edituser
+      var password = this.editpwd
       this.$axios({
         url: `${this.base_url}/Oracle/changeUserInfo`,
         method: 'POST',
@@ -38,6 +41,7 @@ export default {
             message: '用户信息修改成功',
             type: 'success'
           })
+          this.handleClose()
         }
       })
     }
