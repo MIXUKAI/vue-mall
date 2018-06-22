@@ -210,7 +210,8 @@ export default {
     handleX () {
       this.$refs.Login.resetFields()
       this.showLogin = true
-      this.$emit('hideLogin')
+      // this.$emit('hideLogin')
+      this.$store.commit('hideLogin')
     }
   }
 }

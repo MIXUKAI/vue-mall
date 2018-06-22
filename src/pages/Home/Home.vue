@@ -53,7 +53,7 @@
       </div>
     </div>
     <transition name="fade">
-      <home-login v-show="lg_show" @hideLogin="closeLogin" @loginsucc="loginsucc"></home-login>
+      <home-login v-show="show" @hideLogin="closeLogin" @loginsucc="loginsucc"></home-login>
     </transition>
   </div>
 </template>
@@ -68,7 +68,6 @@ export default {
     HomePagination,
     HomeLogin
   },
-  props: ['login'],
   data () {
     return {
       goodsList: [],
@@ -81,6 +80,9 @@ export default {
   computed: {
     lg_show () {
       return this.login
+    },
+    show () {
+      return this.$store.state.login_show
     }
   },
   methods: {

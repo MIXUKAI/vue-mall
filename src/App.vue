@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <home-header @alertLogin="show = true" :username="username" @logout="logout"></home-header>
-    <router-view @showCover="show = true" @hideCover="show = false" :login="show" @loginsucc="loginsucc"/>
+    <home-header :username="username" @logout="logout"></home-header>
+    <router-view  @loginsucc="loginsucc"/>
     <div class="cover" :class="{ display: show }">
     </div>
   </div>
@@ -17,8 +17,12 @@ export default {
   },
   data () {
     return {
-      show: false,
       username: ''
+    }
+  },
+  computed: {
+    show () {
+      return this.$store.state.cover_show
     }
   },
   methods: {

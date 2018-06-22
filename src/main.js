@@ -5,6 +5,7 @@ import App from './App'
 import router from './router'
 import axios from 'axios'
 import VueLazyLoad from 'vue-lazyload'
+import store from './Store/store.js'
 import
 {
   Button,
@@ -57,6 +58,7 @@ Vue.prototype.$confirm = MessageBox.confirm
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })

@@ -28,7 +28,8 @@ export default {
   },
   methods: {
     handleLogin () {
-      this.$emit('alertLogin')
+      this.$store.commit('showLogin')
+      // this.$emit('alertLogin')
     },
     logout () {
       this.$emit('logout')
